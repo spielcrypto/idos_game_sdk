@@ -43,7 +43,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bevy = "0.15.0"
+bevy = "0.17.2"
 idos_game_sdk = { path = "../idos_game_sdk", features = ["all"] }
 
 # For WASM builds
