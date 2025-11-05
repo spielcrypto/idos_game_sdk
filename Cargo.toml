@@ -1,0 +1,142 @@
+[package]
+name = "idos_game_sdk"
+version = "0.1.0"
+edition = "2021"
+authors = ["iDos Games <help@idos.games>"]
+description = "Bevy plugin for iDos Games SDK - Authentication, IAP, Analytics, Crypto Wallets, and more"
+repository = "https://github.com/idosgames/idos-game-sdk-bevy"
+license = "MIT"
+
+[dependencies]
+bevy = "0.17.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+anyhow = "1.0"
+uuid = { version = "1.18.1", features = ["v4", "serde", "js"] }
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.22"
+log = "0.4"
+tracing = "0.1"
+
+# HTTP client - WASM compatible
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+
+# Async runtime - different for native vs WASM
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.12", features = ["rustls-tls"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "Element",
+    "HtmlElement",
+    "Storage",
+    "Location",
+    "console",
+    "Request",
+    "RequestInit",
+    "RequestMode",
+    "Response",
+    "Headers",
+] }
+js-sys = "0.3"
+serde-wasm-bindgen = "0.6"
+
+# Enable WASM support for all getrandom versions
+[target.wasm32-unknown-unknown.dependencies]
+getrandom_v2 = { version = "0.2", features = ["js"], package = "getrandom" }
+getrandom = { version = "0.3", features = ["wasm_js"] }
+
+# Crypto wallet support
+[dependencies.solana-sdk]
+version = "3.0.0"
+optional = true
+default-features = false
+features = ["full"]
+
+[dependencies.hex]
+version = "0.4"
+optional = true
+
+[dependencies.ethers]
+version = "2.0"
+optional = true
+
+# Wallet management dependencies
+[dependencies.bip39]
+version = "2.1"
+optional = true
+
+[dependencies.tiny-hderive]
+version = "0.3"
+optional = true
+
+[dependencies.k256]
+version = "0.13"
+optional = true
+features = ["ecdsa"]
+
+[dependencies.ed25519-dalek]
+version = "2.1.2"
+optional = true
+features = ["rand_core"]
+
+[dependencies.aes-gcm]
+version = "0.10"
+optional = true
+
+[dependencies.pbkdf2]
+version = "0.12"
+optional = true
+features = ["simple"]
+
+[dependencies.sha2]
+version = "0.10"
+optional = true
+
+[dependencies.rand]
+version = "0.8"
+optional = true
+
+[dependencies.bs58]
+version = "0.5"
+optional = true
+
+[dependencies.borsh]
+version = "1.5"
+optional = true
+features = ["derive"]
+
+[dependencies.bincode]
+version = "2.0.1"
+optional = true
+features = ["serde"]
+
+[dependencies.mpl-token-metadata]
+version = "5.0"
+optional = true
+
+[features]
+default = ["auth", "analytics", "iap"]
+auth = []
+analytics = []
+iap = []
+leaderboard = []
+inventory = []
+marketplace = []
+crypto_ethereum = ["hex", "ethers"]
+crypto_solana = ["solana-sdk", "borsh", "bs58", "sha2", "ed25519-dalek", "hex", "bincode", "mpl-token-metadata"]
+wallet = ["bip39", "tiny-hderive", "k256", "ed25519-dalek", "aes-gcm", "pbkdf2", "sha2", "rand", "hex", "bs58"]
+all = ["auth", "analytics", "iap", "leaderboard", "inventory", "marketplace", "crypto_ethereum", "crypto_solana", "wallet"]
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[lib]
+name = "idos_game_sdk"
+path = "src/lib.rs"
