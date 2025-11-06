@@ -3,6 +3,8 @@
 A comprehensive game development SDK for Bevy games, supporting both **native** and **WebAssembly (WASM)** targets.
 [See original SDK in Unity](https://github.com/iDos-Games/iDos-Games-Engine-Unity-SDK)
 
+## DOCS
+
 📖 **Read the guides:**
 - **[INVENTORY_IMPLEMENTATION.md](INVENTORY_IMPLEMENTATION.md)** - Items & currency
 - **[MARKETPLACE_IMPLEMENTATION.md](MARKETPLACE_IMPLEMENTATION.md)** - Player trading
