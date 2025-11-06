@@ -1,15 +1,7 @@
 # iDos Games SDK for Bevy
 
 A comprehensive game development SDK for Bevy games, supporting both **native** and **WebAssembly (WASM)** targets.
-
-## 🚀 **NEW: 100% Unity SDK Parity Achieved!**
-
-**ALL modules fully migrated:**
-- ✅ Inventory, Marketplace, Leaderboard (Nov 3, 2025)
-- ✅ Complete blockchain integration (Ethereum & Solana)
-- ✅ Full transaction execution support
-- ✅ **Metaplex NFT loading** (Nov 5, 2025) ✨ NEW!
-- ✅ Works on native AND WASM
+[See original SDK in Unity](https://github.com/iDos-Games/iDos-Games-Engine-Unity-SDK)
 
 📖 **Read the guides:**
 - **[INVENTORY_IMPLEMENTATION.md](INVENTORY_IMPLEMENTATION.md)** - Items & currency
@@ -572,10 +564,4 @@ cargo doc --open --features all
 ## License
 
 MIT License - see LICENSE file for details.
-
-## Support
-
-- Documentation: https://idosgames.com/docs/developers/
-- Discord: https://discord.com/invite/CHshHYE6j6
-- Email: help@idos.games
 
