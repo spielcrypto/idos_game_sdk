@@ -77,14 +77,36 @@ impl IdosClient {
             .await?;
 
         if !response.status().is_success() {
-            return Err(IdosError::Api(format!(
-                "HTTP {} for {}",
-                response.status(),
-                url
-            )));
+            let status = response.status();
+            let text = response.text().await.unwrap_or_else(|_| "<unreadable body>".to_string());
+            error!(
+                "POST {} failed with status {}. Body: {}",
+                url, status, text
+            );
+            return Err(IdosError::Api(format!("HTTP {} for {}", status, url)));
         }
 
-        Ok(response.json().await?)
+        let bytes = response.bytes().await?;
+        if self.config.debug {
+            debug!(
+                "POST {} responded with: {}",
+                url,
+                String::from_utf8_lossy(&bytes)
+            );
+        }
+
+        serde_json::from_slice(&bytes).map_err(|err| {
+            error!(
+                "Failed to deserialize POST {} response: {}. Body: {}",
+                url,
+                err,
+                String::from_utf8_lossy(&bytes)
+            );
+            IdosError::SerializationError(format!(
+                "Failed to decode response from {}: {}",
+                url, err
+            ))
+        })
     }
 
     /// Make a PUT request

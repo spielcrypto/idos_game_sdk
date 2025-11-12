@@ -21,7 +21,7 @@ fn setup_analytics(
     config: Res<crate::IdosConfig>,
 ) {
     let handler = AnalyticsHandler::new(client.clone(), config.enable_analytics);
-    
+
     // Track session start
     #[cfg(target_arch = "wasm32")]
     {
@@ -34,11 +34,20 @@ fn setup_analytics(
     #[cfg(not(target_arch = "wasm32"))]
     {
         let h = handler.clone();
-        tokio::spawn(async move {
-            h.track_session_start().await.ok();
-        });
+        // Try to use existing runtime, otherwise spawn thread with new runtime
+        if let Ok(handle) = tokio::runtime::Handle::try_current() {
+            handle.spawn(async move {
+                h.track_session_start().await.ok();
+            });
+        } else {
+            std::thread::spawn(move || {
+                let rt = tokio::runtime::Runtime::new().unwrap();
+                rt.block_on(async move {
+                    h.track_session_start().await.ok();
+                });
+            });
+        }
     }
-    
+
     commands.insert_resource(handler);
 }
-

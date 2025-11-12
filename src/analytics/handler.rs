@@ -49,9 +49,21 @@ impl AnalyticsHandler {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            tokio::spawn(async move {
-                let _: Result<serde_json::Value, _> = client.post("analytics/event", &event).await;
-            });
+            // Try to use existing runtime, otherwise spawn thread with new runtime
+            if let Ok(handle) = tokio::runtime::Handle::try_current() {
+                handle.spawn(async move {
+                    let _: Result<serde_json::Value, _> =
+                        client.post("analytics/event", &event).await;
+                });
+            } else {
+                std::thread::spawn(move || {
+                    let rt = tokio::runtime::Runtime::new().unwrap();
+                    rt.block_on(async move {
+                        let _: Result<serde_json::Value, _> =
+                            client.post("analytics/event", &event).await;
+                    });
+                });
+            }
         }
 
         Ok(())
@@ -73,15 +85,28 @@ impl AnalyticsHandler {
         #[cfg(target_arch = "wasm32")]
         {
             wasm_bindgen_futures::spawn_local(async move {
-                let _: Result<serde_json::Value, _> = client.post("analytics/session/start", &event).await;
+                let _: Result<serde_json::Value, _> =
+                    client.post("analytics/session/start", &event).await;
             });
         }
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            tokio::spawn(async move {
-                let _: Result<serde_json::Value, _> = client.post("analytics/session/start", &event).await;
-            });
+            // Try to use existing runtime, otherwise spawn thread with new runtime
+            if let Ok(handle) = tokio::runtime::Handle::try_current() {
+                handle.spawn(async move {
+                    let _: Result<serde_json::Value, _> =
+                        client.post("analytics/session/start", &event).await;
+                });
+            } else {
+                std::thread::spawn(move || {
+                    let rt = tokio::runtime::Runtime::new().unwrap();
+                    rt.block_on(async move {
+                        let _: Result<serde_json::Value, _> =
+                            client.post("analytics/session/start", &event).await;
+                    });
+                });
+            }
         }
 
         Ok(())
@@ -143,4 +168,3 @@ impl AnalyticsHandler {
         }
     }
 }
-
